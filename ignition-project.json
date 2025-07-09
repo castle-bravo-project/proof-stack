@@ -1944,16 +1944,8 @@
   "assetUsage": {},
   "auditLog": [
     {
-      "id": "fe161e81-0e09-4f43-95ac-0a92f2f303fd",
-      "timestamp": "2025-07-09T07:27:12.856Z",
-      "actor": "System",
-      "eventType": "PROJECT_RESET",
-      "summary": "Project data has been reset to its initial state.",
-      "details": {}
-    },
-    {
-      "id": "1b267545-85e5-45c7-965b-c5d66d2e4d7c",
-      "timestamp": "2025-07-09T07:27:46.085Z",
+      "id": "ba599052-244f-420f-88e2-1274033d044c",
+      "timestamp": "2025-07-09T07:33:30.365Z",
       "actor": "User",
       "eventType": "PROJECT_UPDATE",
       "summary": "Project name changed from \"My Awesome Project\" to \"ProofStack MVP\"",
@@ -1965,6 +1957,14 @@
           "projectName": "ProofStack MVP"
         }
       }
+    },
+    {
+      "id": "c4c05c43-27cf-4957-86cb-67a85922310e",
+      "timestamp": "2025-07-09T07:33:41.356Z",
+      "actor": "System",
+      "eventType": "PROJECT_EXPORT",
+      "summary": "Project data exported to JSON file.",
+      "details": {}
     }
   ],
   "abTests": [],
