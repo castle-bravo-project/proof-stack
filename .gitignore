@@ -7,6 +7,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+<<<<<<< HEAD
 # Dependency directories
 node_modules/
 jspm_packages/
@@ -28,11 +29,62 @@ build/
 # Editors
 .vscode/
 .idea/
+=======
+node_modules
+dist
+dist-ssr
+*.local
+
+# Electron build artifacts
+dist-electron/
+out/
+build/
+release/
+
+# Electron executables and installers
+*.exe
+*.dmg
+*.pkg
+*.deb
+*.rpm
+*.AppImage
+*.snap
+
+# Windows specific
+*.dll
+*.pdb
+*.lib
+
+# macOS specific
+*.app/
+*.dsym/
+
+# Electron cache and temp files
+.electron-builder-cache/
+electron-builder-effective-config.yaml
+
+# SQLite database files (keep local)
+*.db
+*.sqlite
+*.sqlite3
+
+# Legal document storage (keep local and secure)
+evidence-files/
+legal-documents/
+case-files/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+>>>>>>> 5873899 (Update ProofStack desktop app)
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+<<<<<<< HEAD
 
 # Misc
 *.DS_Store
@@ -48,3 +100,5 @@ coverage/
 .yarn/install-state.gz
 .pnp/
 .pnp.js
+=======
+>>>>>>> 5873899 (Update ProofStack desktop app)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ProofStack MVP
 
 ![CI Status](https://github.com/YOUR_USERNAME/proofstack-mvp/workflows/CI/badge.svg)
@@ -68,3 +69,19 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 *Replace `YOUR_USERNAME` with your actual GitHub username in the badges and URLs.*
+=======
+# Run and deploy your AI Studio app
+
+This contains everything you need to run your app locally.
+
+## Run Locally
+
+**Prerequisites:**  Node.js
+
+
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`
+>>>>>>> 5873899 (Update ProofStack desktop app)

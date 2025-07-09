@@ -1,34 +1,97 @@
 {
-  "name": "proofstack-mvp",
+  "name": "proofstack",
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "main": "electron/main.cjs",
+  "homepage": "./",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
-    "deploy": "gh-pages -d dist",
-    "ci": "npm run build && tsc --noEmit"
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest --watch",
+    "test:integration": "vitest run src/test/integration.test.tsx",
+    "test:performance": "vitest run src/test/performance.test.ts",
+    "test:unit": "vitest run --exclude src/test/integration.test.tsx src/test/performance.test.ts",
+    "electron": "concurrently \"npm run dev\" \"wait-on http://localhost:5173 && electron .\"",
+    "electron:dev": "concurrently \"npm run dev\" \"wait-on http://localhost:5173 && electron . --dev\"",
+    "electron:build": "npm run build && electron-builder",
+    "electron:build:win": "npm run build && electron-builder --win",
+    "electron:build:mac": "npm run build && electron-builder --mac",
+    "electron:build:linux": "npm run build && electron-builder --linux",
+    "electron:dist": "npm run build && electron-builder --publish=never",
+    "start": "npm run electron"
   },
   "dependencies": {
-    "chart.js": "^4.4.3",
-    "lucide-react": "^0.394.0",
-    "react": "^18.3.1",
-    "react-chartjs-2": "^5.2.0",
-    "react-dom": "^18.3.1"
+    "@google/genai": "^1.7.0",
+    "eslint": "^9.30.1",
+    "lucide-react": "^0.525.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@types/node": "^20.14.2",
-    "@typescript-eslint/eslint-plugin": "^7.13.0",
-    "@typescript-eslint/parser": "^7.13.0",
-    "@vitejs/plugin-react": "^4.3.1",
-    "eslint": "^8.57.0",
-    "eslint-plugin-react-hooks": "^4.6.2",
-    "eslint-plugin-react-refresh": "^0.4.7",
-    "gh-pages": "^6.1.1",
-    "typescript": "^5.2.2",
-    "vite": "^5.3.1"
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^4.6.0",
+    "@vitest/ui": "^3.2.4",
+    "concurrently": "^9.2.0",
+    "electron": "^37.2.0",
+    "electron-builder": "^26.0.12",
+    "jsdom": "^26.1.0",
+    "sqlite3": "^5.1.7",
+    "typescript": "~5.7.2",
+    "vite": "^6.2.0",
+    "vitest": "^3.2.4",
+    "wait-on": "^8.0.3"
+  },
+  "build": {
+    "appId": "com.castlebravo.proofstack",
+    "productName": "ProofStack Legal Compliance Tool",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "node_modules/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    }
   }
 }

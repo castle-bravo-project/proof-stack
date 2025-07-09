@@ -1,0 +1,6 @@
+{
+  "name": "Digital Evidence Assessor",
+  "description": "A wizard-style questionnaire to help users assess digital evidence for relevance, authenticity, reliability, and Daubert admissibility, with AI-powered report generation.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
