@@ -1,0 +1,19 @@
+{
+  "name": "ProofStack MVP",
+  "url": "https://YOUR_USERNAME.github.io/proofstack-mvp/",
+  "callback_urls": [
+    "https://YOUR_USERNAME.github.io/proofstack-mvp/auth",
+    "https://YOUR_USERNAME.github.io/proofstack-mvp/"
+  ],
+  "webhook_attributes": {
+    "url": "https://YOUR_USERNAME.github.io/proofstack-mvp/webhook",
+    "active": true,
+    "content_type": "json"
+  },
+  "public": true,
+  "scopes": {
+    "contents": "read",
+    "metadata": "read"
+  },
+  "events": []
+}
