@@ -19,12 +19,37 @@ if (envApiKey && envApiKey !== 'placeholder_api_key') {
   ai = new GoogleGenAI({ apiKey: currentApiKey });
 }
 
+// API Key Status Types
+export type ApiKeyStatus = 'missing' | 'environment' | 'user-provided';
+
 // API Key management functions
 export const setApiKey = (apiKey: string): void => {
   currentApiKey = apiKey;
   ai = new GoogleGenAI({ apiKey: apiKey });
   // Store in localStorage for persistence
   localStorage.setItem('gemini_api_key', apiKey);
+};
+
+// User-specific API key management (for progressive enhancement)
+export const setUserApiKey = (apiKey: string): void => {
+  setApiKey(apiKey);
+  // Trigger a refresh event for components to update
+  window.dispatchEvent(new CustomEvent('apiKeyChanged', { detail: { status: getApiKeyStatus() } }));
+};
+
+export const clearUserApiKey = (): void => {
+  localStorage.removeItem('gemini_api_key');
+  currentApiKey = null;
+  ai = null;
+
+  // Re-initialize with environment key if available
+  if (envApiKey && envApiKey !== 'placeholder_api_key') {
+    currentApiKey = envApiKey;
+    ai = new GoogleGenAI({ apiKey: currentApiKey });
+  }
+
+  // Trigger a refresh event for components to update
+  window.dispatchEvent(new CustomEvent('apiKeyChanged', { detail: { status: getApiKeyStatus() } }));
 };
 
 export const getApiKey = (): string | null => {
@@ -51,6 +76,86 @@ export const isApiKeyConfigured = (): boolean => {
   return !!getApiKey();
 };
 
+export const getApiKeyStatus = (): ApiKeyStatus => {
+  const userKey = localStorage.getItem('gemini_api_key');
+  if (userKey) return 'user-provided';
+
+  if (envApiKey && envApiKey !== 'placeholder_api_key') return 'environment';
+
+  return 'missing';
+};
+
+// Demo functions for educational purposes when no API key is present
+export const getDemoKeyPoints = (question: Question): { keyPoints: string[] } => {
+  const demoPoints: Record<string, string[]> = {
+    'Authentication': [
+      'Document the source and method of evidence collection',
+      'Establish chain of custody with detailed timestamps',
+      'Verify digital signatures or metadata when available',
+      'Prepare witness testimony for authentication'
+    ],
+    'Chain of Custody': [
+      'Maintain detailed logs of all evidence handlers',
+      'Document any transfers with signatures and timestamps',
+      'Ensure secure storage and access controls',
+      'Address any gaps in custody documentation'
+    ],
+    'Reliability': [
+      'Verify the accuracy of digital evidence collection methods',
+      'Document the technical process used to obtain evidence',
+      'Ensure evidence has not been altered or corrupted',
+      'Prepare technical expert testimony if needed'
+    ],
+    'Best Evidence Rule': [
+      'Provide original digital files when possible',
+      'Explain any copies or duplicates with proper justification',
+      'Document the process used to create copies',
+      'Ensure copies are accurate representations of originals'
+    ]
+  };
+
+  const factor = question.factor;
+  const points = demoPoints[factor] || [
+    'Provide detailed documentation for this evidence factor',
+    'Follow established legal procedures and best practices',
+    'Prepare supporting witness testimony and expert opinions',
+    'Address potential challenges or weaknesses proactively'
+  ];
+
+  return { keyPoints: points };
+};
+
+export const getDemoCritique = (question: Question, answer: string): {
+  strengths: string[];
+  weaknesses: string[];
+  recommendation: string;
+} => {
+  if (!answer.trim()) {
+    return {
+      strengths: [],
+      weaknesses: ['No response provided'],
+      recommendation: 'Please provide a detailed answer to receive personalized feedback. Add your API key for AI-powered critique.'
+    };
+  }
+
+  const wordCount = answer.split(/\s+/).length;
+  const hasSpecificDetails = answer.toLowerCase().includes('timestamp') ||
+                            answer.toLowerCase().includes('signature') ||
+                            answer.toLowerCase().includes('document');
+
+  return {
+    strengths: [
+      wordCount > 50 ? 'Provides detailed response' : 'Response addresses the question',
+      hasSpecificDetails ? 'Includes specific procedural details' : 'Shows understanding of the topic'
+    ],
+    weaknesses: [
+      wordCount < 30 ? 'Could provide more detailed explanation' : 'Consider adding more specific examples',
+      'Demo analysis - add API key for personalized AI feedback'
+    ],
+    recommendation: 'This is demonstration feedback. Add your Gemini API key to receive detailed, personalized critique based on legal best practices and your specific evidence context.'
+  };
+};
+
 // Initialize from localStorage on module load
 const storedKey = localStorage.getItem('gemini_api_key');
 if (storedKey && !currentApiKey) {
@@ -59,9 +164,16 @@ if (storedKey && !currentApiKey) {
 
 const getAI = (): GoogleGenAI => {
   if (!ai) {
-    throw new Error(
-      'API key not configured. Please set your Gemini API key first.'
-    );
+    const status = getApiKeyStatus();
+    let message = 'API key not configured. ';
+
+    if (status === 'missing') {
+      message += 'Please add your Gemini API key to enable AI features. You can get a free API key from Google AI Studio.';
+    } else {
+      message += 'Please check your API key configuration.';
+    }
+
+    throw new Error(message);
   }
   return ai;
 };
@@ -113,8 +225,16 @@ export const getAIKeyPoints = async (
     return parseJsonResponse<{ keyPoints: string[] }>(response.text);
   } catch (error) {
     console.error('Error getting AI key points:', error);
+    const status = getApiKeyStatus();
+
+    if (status === 'missing') {
+      throw new Error(
+        'AI features require an API key. Please add your Gemini API key to get AI-powered insights and recommendations.'
+      );
+    }
+
     throw new Error(
-      'Failed to get key points from AI. Please check API key and network.'
+      'Failed to get key points from AI. Please check your API key and network connection.'
     );
   }
 };
@@ -162,8 +282,16 @@ export const getAICritique = async (
     }>(response.text);
   } catch (error) {
     console.error('Error getting AI critique:', error);
+    const status = getApiKeyStatus();
+
+    if (status === 'missing') {
+      throw new Error(
+        'AI critique requires an API key. Please add your Gemini API key to get personalized feedback on your responses.'
+      );
+    }
+
     throw new Error(
-      'Failed to get critique from AI. Please check API key and network.'
+      'Failed to get critique from AI. Please check your API key and network connection.'
     );
   }
 };
@@ -265,8 +393,16 @@ export const generateComprehensiveAnalysis = async (
     return parseJsonResponse<AnalysisResult>(response.text);
   } catch (error) {
     console.error('Error generating comprehensive analysis:', error);
+    const status = getApiKeyStatus();
+
+    if (status === 'missing') {
+      throw new Error(
+        'AI analysis requires an API key. Please add your Gemini API key to generate comprehensive legal analysis reports.'
+      );
+    }
+
     throw new Error(
-      'Failed to generate the analysis. Please check the API key and network connection.'
+      'Failed to generate the analysis. Please check your API key and network connection.'
     );
   }
 };

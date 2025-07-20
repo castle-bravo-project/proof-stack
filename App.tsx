@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import DesktopAppIndicator from './components/DesktopAppIndicator';
+import { ApiKeyBanner } from './components/common/ApiKeyBanner';
 import { AlertTriangleIcon, CheckCircleIcon, DownloadIcon, FileTextIcon, GavelIcon, LightbulbIcon, ReportIcon, ScaleIcon, ShieldExclamationIcon, SparklesIcon, XCircleIcon } from './components/icons';
 import { EVIDENCE_QUESTIONS } from './constants';
-import { generateComprehensiveAnalysis, getAICritique, getAIKeyPoints } from './services/geminiService';
+import { generateComprehensiveAnalysis, getAICritique, getAIKeyPoints, getApiKeyStatus, ApiKeyStatus, getDemoKeyPoints, getDemoCritique } from './services/geminiService';
 import { AnalysisResult, Answer, Question } from './types';
 
 // Legal Analysis System Imports
@@ -16,6 +17,60 @@ interface EvidenceInfo {
   type: string;
   jurisdiction?: 'Federal' | 'Indiana' | 'Both';
 }
+
+// Demo analysis generator for educational purposes when no API key is present
+const generateDemoAnalysis = (answers: Answer[], evidenceInfo: EvidenceInfo): AnalysisResult => {
+  return {
+    executiveSummary: {
+      overallConfidence: 'Medium',
+      confidenceBreakdown: {
+        high: 3,
+        medium: 4,
+        low: 2
+      },
+      topRecommendations: [
+        'Strengthen chain of custody documentation with detailed timestamps and handler signatures',
+        'Obtain additional authentication evidence such as device logs or metadata verification',
+        'Prepare comprehensive technical documentation for court presentation'
+      ]
+    },
+    overallConclusion: `This is a demonstration analysis for educational purposes. The evidence "${evidenceInfo.name || 'Digital Evidence'}" shows moderate admissibility potential based on standard legal criteria. In a real analysis with an API key, this would provide detailed AI-powered insights specific to your evidence and responses.`,
+    analysisSections: [
+      {
+        sectionTitle: 'Foundational Admissibility',
+        sectionSummary: 'Demo analysis of basic admissibility requirements. Real AI analysis would provide detailed evaluation based on your specific responses.',
+        factorAnalyses: [
+          {
+            factor: 'Authentication',
+            summary: 'This is demonstration content. With an API key, you would receive personalized analysis of your authentication evidence.',
+            admissibilityConfidence: 'Medium',
+            strengths: ['Standard authentication procedures appear to be followed', 'Evidence type is commonly accepted in courts'],
+            weaknesses: ['Demo mode - actual analysis requires API key', 'Cannot evaluate specific authentication details without AI'],
+            actionableRecommendations: ['Add your API key to get specific recommendations', 'Review authentication best practices for your evidence type'],
+            crossExaminationQuestions: ['How was the evidence initially identified?', 'What authentication methods were used?'],
+            recommendedSuppressionText: ['Demo suppression argument - API key required for specific legal arguments']
+          }
+        ]
+      },
+      {
+        sectionTitle: 'Chain of Custody',
+        sectionSummary: 'Demo evaluation of custody procedures. Real analysis would examine your specific custody documentation.',
+        factorAnalyses: [
+          {
+            factor: 'Documentation',
+            summary: 'Demonstration of custody analysis. Enable AI features with your API key for detailed evaluation.',
+            admissibilityConfidence: 'Medium',
+            strengths: ['Standard custody procedures typically followed', 'Evidence handling appears documented'],
+            weaknesses: ['Demo analysis cannot evaluate actual documentation', 'Specific custody gaps cannot be identified without AI'],
+            actionableRecommendations: ['Configure API key for detailed custody analysis', 'Review all custody transfer documentation'],
+            crossExaminationQuestions: ['Who handled the evidence at each stage?', 'Were there any breaks in the chain of custody?'],
+            recommendedSuppressionText: ['Demo legal argument - specific arguments require AI analysis']
+          }
+        ]
+      }
+    ]
+  };
+};
 
 const App: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -34,11 +89,32 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [apiKeyStatus, setApiKeyStatus] = useState<ApiKeyStatus>('missing');
 
   const totalQuestions = EVIDENCE_QUESTIONS.length;
   const totalSteps = totalQuestions + 1; // +1 for the evidence definition step
   const isFinalStep = currentStep === totalSteps;
   const currentQuestion = currentStep > 0 && currentStep <= totalQuestions ? EVIDENCE_QUESTIONS[currentStep - 1] : null;
+
+  // Track API key status for progressive enhancement
+  useEffect(() => {
+    const updateApiKeyStatus = () => {
+      setApiKeyStatus(getApiKeyStatus());
+    };
+
+    updateApiKeyStatus();
+
+    // Listen for API key changes
+    const handleApiKeyChange = (event: CustomEvent) => {
+      setApiKeyStatus(event.detail.status);
+    };
+
+    window.addEventListener('apiKeyChanged', handleApiKeyChange as EventListener);
+
+    return () => {
+      window.removeEventListener('apiKeyChanged', handleApiKeyChange as EventListener);
+    };
+  }, []);
   
   const handleAnswerChange = useCallback((questionId: string, value: string) => {
     setAnswers(prevAnswers => {
@@ -68,12 +144,18 @@ const App: React.FC = () => {
     setIsLoading(true);
     setError(null);
     setAnalysis(null);
+
     try {
-      if (!process.env.API_KEY || process.env.API_KEY === 'placeholder_api_key') {
-          throw new Error("API_KEY is not configured. Please set the environment variable to generate a report.");
+      // Check if we have an API key for AI analysis
+      if (apiKeyStatus === 'missing') {
+        // Generate demo/mock analysis for educational purposes
+        const demoAnalysis = generateDemoAnalysis(answers, evidenceInfo);
+        setAnalysis(demoAnalysis);
+      } else {
+        // Generate real AI analysis
+        const result = await generateComprehensiveAnalysis(answers, evidenceInfo);
+        setAnalysis(result);
       }
-      const result = await generateComprehensiveAnalysis(answers, evidenceInfo);
-      setAnalysis(result);
     } catch (e) {
       if (e instanceof Error) {
         setError(e.message);
@@ -96,7 +178,7 @@ const App: React.FC = () => {
 
     if (currentStep > 0 && !isFinalStep && currentQuestion) {
       const answer = answers.find(a => a.questionId === currentQuestion.id)?.value || '';
-      return <WizardStep question={currentQuestion} answer={answer} onAnswerChange={handleAnswerChange} />;
+      return <WizardStep question={currentQuestion} answer={answer} onAnswerChange={handleAnswerChange} apiKeyStatus={apiKeyStatus} />;
     }
     
     if (isFinalStep) {
@@ -156,8 +238,12 @@ const App: React.FC = () => {
       {/* Main Dashboard */}
       <main className="max-w-7xl mx-auto p-6">
         <DesktopAppIndicator />
+
+        {/* API Key Banner */}
+        <ApiKeyBanner className="mb-6" />
+
         {analysis ? (
-          <ReportView analysis={analysis} answers={answers} evidenceInfo={evidenceInfo} />
+          <ReportView analysis={analysis} answers={answers} evidenceInfo={evidenceInfo} apiKeyStatus={apiKeyStatus} />
         ) : (
           <DashboardView
             currentStep={currentStep}
@@ -171,6 +257,7 @@ const App: React.FC = () => {
             totalQuestions={totalQuestions}
             currentQuestion={currentQuestion}
             isFinalStep={isFinalStep}
+            apiKeyStatus={apiKeyStatus}
           />
         )}
       </main>
@@ -193,6 +280,7 @@ interface DashboardViewProps {
   totalQuestions: number;
   currentQuestion: Question | null;
   isFinalStep: boolean;
+  apiKeyStatus: ApiKeyStatus;
 }
 
 const DashboardView: React.FC<DashboardViewProps> = ({
@@ -206,7 +294,8 @@ const DashboardView: React.FC<DashboardViewProps> = ({
   error,
   totalQuestions,
   currentQuestion,
-  isFinalStep
+  isFinalStep,
+  apiKeyStatus
 }) => {
   const completedQuestions = answers.length;
   const progressPercentage = (completedQuestions / totalQuestions) * 100;
@@ -220,9 +309,20 @@ const DashboardView: React.FC<DashboardViewProps> = ({
       <div className="bg-gray-900 border border-gray-800 rounded-lg p-8">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-white mb-4">Digital Evidence Assessment</h2>
-          <p className="text-sm text-gray-400 max-w-3xl mx-auto">
-            Evaluate your digital evidence against legal standards of admissibility using AI-powered analysis
-          </p>
+          {apiKeyStatus === 'missing' ? (
+            <div className="space-y-2">
+              <p className="text-sm text-gray-400 max-w-3xl mx-auto">
+                Learn about digital evidence admissibility with our educational assessment tool
+              </p>
+              <p className="text-xs text-amber-400 max-w-3xl mx-auto">
+                Add your API key above to unlock AI-powered legal analysis and personalized insights
+              </p>
+            </div>
+          ) : (
+            <p className="text-sm text-gray-400 max-w-3xl mx-auto">
+              Evaluate your digital evidence against legal standards of admissibility using AI-powered analysis
+            </p>
+          )}
         </div>
 
         {/* Progress Overview */}
@@ -281,6 +381,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
             answers={answers}
             onAnswerChange={onAnswerChange}
             totalQuestions={totalQuestions}
+            apiKeyStatus={apiKeyStatus}
           />
         </div>
       </div>
@@ -370,7 +471,8 @@ const QuestionsPanel: React.FC<{
   answers: Answer[];
   onAnswerChange: (questionId: string, value: string) => void;
   totalQuestions: number;
-}> = ({ answers, onAnswerChange, totalQuestions }) => {
+  apiKeyStatus: ApiKeyStatus;
+}> = ({ answers, onAnswerChange, totalQuestions, apiKeyStatus }) => {
   const [activeTab, setActiveTab] = useState<'foundational' | 'daubert'>('foundational');
 
   const foundationalQuestions = EVIDENCE_QUESTIONS.filter(q => q.section === 'Foundational Admissibility');
@@ -404,7 +506,7 @@ const QuestionsPanel: React.FC<{
           placeholder="Provide your detailed response..."
         />
 
-        <AIAssistantPanel question={question} answer={answer} onAnswerChange={onAnswerChange} />
+        <AIAssistantPanel question={question} answer={answer} onAnswerChange={onAnswerChange} apiKeyStatus={apiKeyStatus} />
       </div>
     );
   };
@@ -506,19 +608,20 @@ const EvidenceDefinitionStep = ({ evidenceInfo, setEvidenceInfo }: { evidenceInf
     );
 };
 
-const AIAssistantPanel = ({ question, answer, onAnswerChange }: { question: Question, answer: string, onAnswerChange: (id: string, val: string) => void }) => {
+const AIAssistantPanel = ({ question, answer, onAnswerChange, apiKeyStatus }: {
+  question: Question,
+  answer: string,
+  onAnswerChange: (id: string, val: string) => void,
+  apiKeyStatus: ApiKeyStatus
+}) => {
     const [mode, setMode] = useState<'points' | 'critique' | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [result, setResult] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
 
-    const hasApiKey = process.env.API_KEY && process.env.API_KEY !== 'placeholder_api_key';
+    const hasApiKey = apiKeyStatus !== 'missing';
 
     const handleAction = async (actionType: 'points' | 'critique') => {
-        if (!hasApiKey) {
-            setError("API_KEY is not configured. Please set the environment variable to use the AI Assistant.");
-            return;
-        }
         if (actionType === 'critique' && !answer.trim()) {
             setError("Please write a draft answer before asking for a critique.");
             return;
@@ -531,10 +634,20 @@ const AIAssistantPanel = ({ question, answer, onAnswerChange }: { question: Ques
 
         try {
             let res;
-            if (actionType === 'points') {
-                res = await getAIKeyPoints(question);
+            if (hasApiKey) {
+                // Use real AI when API key is available
+                if (actionType === 'points') {
+                    res = await getAIKeyPoints(question);
+                } else {
+                    res = await getAICritique(question, answer);
+                }
             } else {
-                res = await getAICritique(question, answer);
+                // Use demo mode when no API key
+                if (actionType === 'points') {
+                    res = getDemoKeyPoints(question);
+                } else {
+                    res = getDemoCritique(question, answer);
+                }
             }
             setResult(res);
         } catch (e: any) {
@@ -557,7 +670,9 @@ const AIAssistantPanel = ({ question, answer, onAnswerChange }: { question: Ques
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                         <SparklesIcon className="w-4 h-4 brand-primary" />
-                        <p className="text-sm font-semibold text-white">AI Assistant:</p>
+                        <p className="text-sm font-semibold text-white">
+                          AI Assistant{!hasApiKey && ' (Demo Mode)'}:
+                        </p>
                     </div>
                     <button
                         onClick={() => handleAction('points')}
@@ -588,8 +703,13 @@ const AIAssistantPanel = ({ question, answer, onAnswerChange }: { question: Ques
                 <div className="status-info rounded-lg p-4 border">
                     <h5 className="font-semibold text-white mb-3 flex items-center gap-2">
                         <LightbulbIcon className="w-4 h-4" />
-                        Key Points to Consider:
+                        {hasApiKey ? 'AI-Generated Key Points:' : 'Demo Key Points:'}
                     </h5>
+                    {!hasApiKey && (
+                      <p className="text-xs text-amber-400 mb-3">
+                        These are educational examples. Add your API key for personalized AI insights.
+                      </p>
+                    )}
                     <ul className="space-y-2 text-sm">
                         {result.keyPoints.map((point: string, i: number) => (
                             <li key={i} className="flex items-start gap-2">
@@ -605,6 +725,13 @@ const AIAssistantPanel = ({ question, answer, onAnswerChange }: { question: Ques
                 <div className="bg-gray-900 rounded-lg p-4 space-y-4">
                     <h5 className="font-semibold text-white mb-3 flex items-center gap-2">
                         <GavelIcon className="w-4 h-4 brand-primary" />
+                        {hasApiKey ? 'AI Critique:' : 'Demo Critique:'}
+                    </h5>
+                    {!hasApiKey && (
+                      <p className="text-xs text-amber-400 mb-3">
+                        This is educational feedback. Add your API key for personalized AI critique.
+                      </p>
+                    )}
                         AI Critique:
                     </h5>
 
@@ -664,7 +791,12 @@ const AIAssistantPanel = ({ question, answer, onAnswerChange }: { question: Ques
 };
 
 
-const WizardStep = ({ question, answer, onAnswerChange }: { question: Question, answer: string, onAnswerChange: (id: string, val: string) => void }) => {
+const WizardStep = ({ question, answer, onAnswerChange, apiKeyStatus }: {
+  question: Question,
+  answer: string,
+  onAnswerChange: (id: string, val: string) => void,
+  apiKeyStatus: ApiKeyStatus
+}) => {
     const [isAssistantOpen, setAssistantOpen] = useState(false);
 
     return (
@@ -685,7 +817,7 @@ const WizardStep = ({ question, answer, onAnswerChange }: { question: Question, 
                     <SparklesIcon /> {isAssistantOpen ? 'Close Assistant' : 'Ask AI Assistant'}
                 </button>
             </div>
-            {isAssistantOpen && <AIAssistantPanel question={question} answer={answer} onAnswerChange={onAnswerChange} />}
+            {isAssistantOpen && <AIAssistantPanel question={question} answer={answer} onAnswerChange={onAnswerChange} apiKeyStatus={apiKeyStatus} />}
         </div>
     );
 };
@@ -1070,7 +1202,7 @@ const ExecutiveSummaryView = ({ summary }: { summary: AnalysisResult['executiveS
 }
 
 
-const ReportView = ({ analysis, answers, evidenceInfo }: { analysis: AnalysisResult, answers: Answer[], evidenceInfo: EvidenceInfo }) => {
+const ReportView = ({ analysis, answers, evidenceInfo, apiKeyStatus }: { analysis: AnalysisResult, answers: Answer[], evidenceInfo: EvidenceInfo, apiKeyStatus: ApiKeyStatus }) => {
   const getAnswerForFactor = (factorName: string) => {
     const question = EVIDENCE_QUESTIONS.find(q => q.factor === factorName);
     return answers.find(a => a.questionId === question?.id)?.value || "Not provided.";
@@ -1109,10 +1241,32 @@ const ReportView = ({ analysis, answers, evidenceInfo }: { analysis: AnalysisRes
 
   return (
     <div className="space-y-8">
+      {/* Demo Mode Indicator */}
+      {apiKeyStatus === 'missing' && (
+        <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+          <div className="flex items-center gap-3">
+            <LightbulbIcon className="w-5 h-5 text-blue-400 flex-shrink-0" />
+            <div>
+              <h4 className="text-blue-300 font-medium">Educational Demo Report</h4>
+              <p className="text-blue-200/80 text-sm">
+                This is a demonstration report for learning purposes. Add your API key to generate personalized AI-powered legal analysis.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
        <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold text-white">Analysis Report</h2>
-          <p className="text-sm text-gray-400 mt-1">Comprehensive legal admissibility assessment</p>
+          <h2 className="text-3xl font-bold text-white">
+            {apiKeyStatus === 'missing' ? 'Demo Analysis Report' : 'Analysis Report'}
+          </h2>
+          <p className="text-sm text-gray-400 mt-1">
+            {apiKeyStatus === 'missing'
+              ? 'Educational legal admissibility assessment'
+              : 'Comprehensive legal admissibility assessment'
+            }
+          </p>
         </div>
         <button
           onClick={downloadReport}
