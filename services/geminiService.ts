@@ -214,7 +214,7 @@ export const getAIKeyPoints = async (
     `;
   try {
     const response = await getAI().models.generateContent({
-      model: 'gemini-2.5-flash-preview-04-17',
+      model: 'gemini-2.5-flash',
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
@@ -267,7 +267,7 @@ export const getAICritique = async (
     `;
   try {
     const response = await getAI().models.generateContent({
-      model: 'gemini-2.5-flash-preview-04-17',
+      model: 'gemini-2.5-flash',
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
@@ -382,7 +382,7 @@ export const generateComprehensiveAnalysis = async (
 
   try {
     const response = await getAI().models.generateContent({
-      model: 'gemini-2.5-flash-preview-04-17',
+      model: 'gemini-2.5-flash',
       contents: prompt,
       config: {
         responseMimeType: 'application/json',

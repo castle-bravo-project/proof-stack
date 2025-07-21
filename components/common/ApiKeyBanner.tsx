@@ -59,7 +59,7 @@ export const ApiKeyBanner: React.FC<ApiKeyBannerProps> = ({ className = '' }) =>
       const { GoogleGenAI } = await import('@google/genai');
       const testAI = new GoogleGenAI({ apiKey: apiKey });
       const response = await testAI.models.generateContent({
-        model: 'gemini-2.5-flash-preview-04-17',
+        model: 'gemini-2.5-flash',
         contents: 'Test API key validation',
         config: {
           temperature: 0.1,
