@@ -8,8 +8,8 @@ let ai: GoogleGenAI | null = null;
 
 // Check for API key in environment variables
 const envApiKey =
-  (import.meta.env?.VITE_GEMINI_API_KEY as string) ||
-  (import.meta.env?.VITE_API_KEY as string) ||
+  (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_GEMINI_API_KEY as string) ||
+  (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_KEY as string) ||
   (typeof process !== 'undefined' ? process.env?.GEMINI_API_KEY : undefined) ||
   (typeof process !== 'undefined' ? process.env?.API_KEY : undefined);
 
@@ -135,7 +135,7 @@ export const getDemoKeyPoints = (question: Question): { keyPoints: string[] } =>
   return { keyPoints: points };
 };
 
-export const getDemoCritique = (question: Question, answer: string): {
+export const getDemoCritique = (_question: Question, answer: string): {
   strengths: string[];
   weaknesses: string[];
   recommendation: string;
@@ -232,7 +232,7 @@ export const getAIKeyPoints = async (
         thinkingConfig: { thinkingBudget: 0 },
       },
     });
-    return parseJsonResponse<{ keyPoints: string[] }>(response.text);
+    return parseJsonResponse<{ keyPoints: string[] }>(response.text || '');
   } catch (error) {
     console.error('Error getting AI key points:', error);
     const status = getApiKeyStatus();
@@ -289,7 +289,7 @@ export const getAICritique = async (
       strengths: string[];
       weaknesses: string[];
       recommendation: string;
-    }>(response.text);
+    }>(response.text || '');
   } catch (error) {
     console.error('Error getting AI critique:', error);
     const status = getApiKeyStatus();
@@ -400,7 +400,7 @@ export const generateComprehensiveAnalysis = async (
       },
     });
 
-    return parseJsonResponse<AnalysisResult>(response.text);
+    return parseJsonResponse<AnalysisResult>(response.text || '');
   } catch (error) {
     console.error('Error generating comprehensive analysis:', error);
     const status = getApiKeyStatus();

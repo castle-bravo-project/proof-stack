@@ -1,7 +1,7 @@
 // Enhanced AI Analysis with Legal Grounding
 // Integrates rule-based analysis with AI to provide legally sound recommendations
 
-import { LegalStandardsEngine } from './legalStandards';
+// import { LegalStandardsEngine } from './legalStandards';
 import { EvidenceAnalyzer, EvidenceItem, AnalysisResult as RuleBasedResult } from './evidenceAnalyzer';
 import { DocumentAnalysisEngine, DocumentAnalysisResult } from './documentAnalysisEngine';
 import { DigitalAuthenticationSystem, AuthenticationResult } from './digitalAuthentication';
@@ -99,14 +99,14 @@ export interface SuppressionGround {
 }
 
 export class EnhancedAIAnalysisEngine {
-  private _legalEngine: LegalStandardsEngine;
+  // private _legalEngine: LegalStandardsEngine;
   private evidenceAnalyzer: EvidenceAnalyzer;
   private documentAnalyzer: DocumentAnalysisEngine;
   private authenticationSystem: DigitalAuthenticationSystem;
   private auditSystem: ComplianceAuditSystem;
 
   constructor() {
-    this._legalEngine = new LegalStandardsEngine();
+    // this._legalEngine = new LegalStandardsEngine();
     this.evidenceAnalyzer = new EvidenceAnalyzer();
     this.documentAnalyzer = new DocumentAnalysisEngine();
     this.authenticationSystem = new DigitalAuthenticationSystem();
@@ -160,7 +160,7 @@ export class EnhancedAIAnalysisEngine {
       notes: undefined,
       evidenceState: 'original' as const,
       integrityVerification: {
-        algorithm: 'SHA256',
+        algorithm: 'SHA256' as const,
         originalHash: evidence.metadata.hashSHA256 || '',
         currentHash: evidence.metadata.hashSHA256 || '',
         isValid: true,

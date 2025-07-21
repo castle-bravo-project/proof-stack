@@ -522,16 +522,26 @@ export class LegalStandardsEngine {
 
   private evaluateFRE901(
     evidence: any,
-    findings: string[],
+    findings: Finding[],
     recommendations: string[]
   ): number {
     let score = 55; // Increased base score
 
     if (evidence.metadata?.digitalSignature) {
       score += 25; // Increased bonus
-      findings.push('Digital signature present for authentication');
+      findings.push({
+        type: 'strength',
+        description: 'Digital signature present for authentication',
+        impact: 'medium',
+        ruleReference: 'FRE 901'
+      });
     } else {
-      findings.push('Missing digital authentication');
+      findings.push({
+        type: 'weakness',
+        description: 'Missing digital authentication',
+        impact: 'high',
+        ruleReference: 'FRE 901'
+      });
       recommendations.push(
         'Obtain digital signature or other authentication method'
       );
@@ -539,9 +549,19 @@ export class LegalStandardsEngine {
 
     if (evidence.metadata?.chainOfCustody?.length > 0) {
       score += 20; // Increased bonus
-      findings.push('Chain of custody documented');
+      findings.push({
+        type: 'strength',
+        description: 'Chain of custody documented',
+        impact: 'medium',
+        ruleReference: 'FRE 901'
+      });
     } else {
-      findings.push('Chain of custody missing or incomplete');
+      findings.push({
+        type: 'weakness',
+        description: 'Chain of custody missing or incomplete',
+        impact: 'high',
+        ruleReference: 'FRE 901'
+      });
       recommendations.push('Document complete chain of custody');
     }
 
@@ -550,16 +570,26 @@ export class LegalStandardsEngine {
 
   private evaluateFRE902(
     evidence: any,
-    findings: string[],
+    findings: Finding[],
     recommendations: string[]
   ): number {
     let score = 45; // Increased base score
 
     if (evidence.metadata?.documentType === 'public_record') {
       score += 45; // Increased bonus (45+45=90 > 80)
-      findings.push('Document qualifies as self-authenticating public record');
+      findings.push({
+        type: 'strength',
+        description: 'Document qualifies as self-authenticating public record',
+        impact: 'high',
+        ruleReference: 'FRE 902'
+      });
     } else {
-      findings.push('Document requires additional authentication');
+      findings.push({
+        type: 'weakness',
+        description: 'Document requires additional authentication',
+        impact: 'medium',
+        ruleReference: 'FRE 902'
+      });
       recommendations.push('Provide authentication witness or certification');
     }
 
@@ -568,19 +598,34 @@ export class LegalStandardsEngine {
 
   private evaluateFRE1002(
     evidence: any,
-    findings: string[],
+    findings: Finding[],
     recommendations: string[]
   ): number {
     let score = 35; // Increased base score
 
     if (evidence.metadata?.isOriginal) {
       score += 60; // Increased bonus (35+60=95 > 85)
-      findings.push('Original document provided');
+      findings.push({
+        type: 'strength',
+        description: 'Original document provided',
+        impact: 'high',
+        ruleReference: 'FRE 1002'
+      });
     } else if (evidence.metadata?.copyJustification) {
       score += 45; // Increased bonus for justified copies
-      findings.push('Copy provided with proper justification');
+      findings.push({
+        type: 'strength',
+        description: 'Copy provided with proper justification',
+        impact: 'medium',
+        ruleReference: 'FRE 1002'
+      });
     } else {
-      findings.push('Copy provided without justification for original absence');
+      findings.push({
+        type: 'weakness',
+        description: 'Copy provided without justification for original absence',
+        impact: 'high',
+        ruleReference: 'FRE 1002'
+      });
       recommendations.push(
         'Provide justification for using copy instead of original'
       );
@@ -591,20 +636,30 @@ export class LegalStandardsEngine {
 
   private evaluateFRE803_6(
     evidence: any,
-    findings: string[],
+    findings: Finding[],
     recommendations: string[]
   ): number {
     let score = 35; // Increased base score
 
     if (evidence.metadata?.regularCourse && evidence.metadata?.recordKeeper) {
       score += 50; // Increased bonus (35+50=85 > 75)
-      findings.push('Qualifies as business record exception to hearsay');
+      findings.push({
+        type: 'strength',
+        description: 'Qualifies as business record exception to hearsay',
+        impact: 'high',
+        ruleReference: 'FRE 803(6)'
+      });
     } else if (
       evidence.metadata?.isHearsay &&
       !evidence.metadata?.hearsayException
     ) {
       score = 20;
-      findings.push('Hearsay evidence without applicable exception');
+      findings.push({
+        type: 'weakness',
+        description: 'Hearsay evidence without applicable exception',
+        impact: 'high',
+        ruleReference: 'FRE 803(6)'
+      });
       recommendations.push(
         'Establish hearsay exception or find non-hearsay alternative'
       );
@@ -615,7 +670,7 @@ export class LegalStandardsEngine {
 
   private evaluateFRE401(
     evidence: any,
-    findings: string[],
+    findings: Finding[],
     recommendations: string[]
   ): number {
     let score = 45; // Increased base score
@@ -624,11 +679,26 @@ export class LegalStandardsEngine {
     score += Math.round(relevanceScore * 0.8); // Increased multiplier
 
     if (relevanceScore >= 80) {
-      findings.push('Evidence highly relevant to case');
+      findings.push({
+        type: 'strength',
+        description: 'Evidence highly relevant to case',
+        impact: 'high',
+        ruleReference: 'FRE 401'
+      });
     } else if (relevanceScore >= 60) {
-      findings.push('Evidence moderately relevant');
+      findings.push({
+        type: 'strength',
+        description: 'Evidence moderately relevant',
+        impact: 'medium',
+        ruleReference: 'FRE 401'
+      });
     } else {
-      findings.push('Evidence relevance questionable');
+      findings.push({
+        type: 'weakness',
+        description: 'Evidence relevance questionable',
+        impact: 'medium',
+        ruleReference: 'FRE 401'
+      });
       recommendations.push(
         'Strengthen connection between evidence and case issues'
       );
@@ -639,20 +709,30 @@ export class LegalStandardsEngine {
 
   private evaluateFRE403(
     evidence: any,
-    findings: string[],
+    findings: Finding[],
     recommendations: string[]
   ): number {
     let score = 70; // Base score (assume admissible unless prejudicial)
 
     if (evidence.metadata?.prejudicialRisk === 'high') {
       score -= 30;
-      findings.push('High risk of unfair prejudice');
+      findings.push({
+        type: 'weakness',
+        description: 'High risk of unfair prejudice',
+        impact: 'high',
+        ruleReference: 'FRE 403'
+      });
       recommendations.push(
         'Consider limiting instruction or alternative evidence'
       );
     } else if (evidence.metadata?.prejudicialRisk === 'medium') {
       score -= 15;
-      findings.push('Moderate prejudicial risk');
+      findings.push({
+        type: 'concern',
+        description: 'Moderate prejudicial risk',
+        impact: 'medium',
+        ruleReference: 'FRE 403'
+      });
     }
 
     return score;
