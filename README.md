@@ -55,6 +55,8 @@ ProofStack implements a user-friendly progressive enhancement approach to API ke
 
 ## 💻 Local Development
 
+### Web Application Development
+
 1.  **Clone the Repository:**
     ```bash
     git clone https://github.com/castle-bravo-project/proof-stack.git
@@ -66,24 +68,121 @@ ProofStack implements a user-friendly progressive enhancement approach to API ke
     npm install
     ```
 
-3.  **Run Locally:**
+3.  **Run Web Version Locally:**
     ```bash
     npm run dev
     ```
     The application will be available at `http://localhost:5173/proof-stack/`
 
-4.  **Build for Production:**
+    > **Note**: The web version shows "Browser Development Mode" warnings. This is normal and indicates you're running the development version. For full compliance features, use the desktop application.
+
+4.  **Build Web Version for Production:**
     ```bash
     npm run build
     ```
 
+### Desktop Application Development
+
+The desktop version provides additional features like secure local database storage and eliminates browser limitations.
+
+1.  **Run Desktop App in Development:**
+    ```bash
+    npm run electron:dev
+    ```
+    This launches the full desktop application with all features enabled.
+
+2.  **Build Desktop App from Source:**
+
+    **Windows:**
+    ```bash
+    npm run electron:build:win
+    ```
+
+    **macOS:**
+    ```bash
+    npm run electron:build:mac
+    ```
+
+    **Linux:**
+    ```bash
+    npm run electron:build:linux
+    ```
+
+    **All Platforms:**
+    ```bash
+    npm run electron:build
+    ```
+
+3.  **Desktop App Output:**
+    - **Windows**: `dist-electron/ProofStack Legal Compliance Tool Setup X.X.X.exe`
+    - **macOS**: `dist-electron/ProofStack Legal Compliance Tool-X.X.X.dmg`
+    - **Linux**: `dist-electron/ProofStack Legal Compliance Tool-X.X.X.AppImage`
+
+### Why Build from Source?
+
+**For Users:**
+- ✅ **No Security Warnings**: Self-built apps don't trigger "Unknown Publisher" warnings
+- ✅ **Latest Features**: Access to the most recent code changes
+- ✅ **Full Trust**: You control the entire build process
+- ✅ **Customization**: Modify features to suit your needs
+
+**For Developers:**
+- ✅ **Development Environment**: Full debugging and development tools
+- ✅ **Code Inspection**: Review all source code before building
+- ✅ **Custom Builds**: Add your own features or modifications
+
+## 🌐 Web vs Desktop Versions
+
+### Web Version (Browser)
+**Best for**: Quick access, trying out features, educational use
+
+**Features:**
+- ✅ **Instant Access**: No installation required
+- ✅ **Cross-Platform**: Works on any device with a browser
+- ✅ **Auto-Updates**: Always the latest version
+- ✅ **Progressive Enhancement**: Full API key management
+- ⚠️ **Browser Limitations**: Shows development mode warnings
+- ⚠️ **No Local Database**: Evidence data not persistently stored
+
+### Desktop Version (Electron App)
+**Best for**: Professional use, legal compliance, data persistence
+
+**Features:**
+- ✅ **Native Experience**: Full desktop integration
+- ✅ **SQLite Database**: Secure local storage for evidence and analysis
+- ✅ **Professional Interface**: Native menus and keyboard shortcuts
+- ✅ **Chain of Custody**: Built-in evidence tracking
+- ✅ **No Browser Warnings**: Clean, professional interface
+- ✅ **Offline Capable**: Core features work without internet
+- ✅ **File Associations**: Open evidence files directly
+- ✅ **Data Export**: Professional reporting and backup features
+
+### When to Use Each Version
+
+| Use Case | Web Version | Desktop Version |
+|----------|-------------|-----------------|
+| **Learning & Education** | ✅ Perfect | ✅ Good |
+| **Quick Assessment** | ✅ Perfect | ✅ Good |
+| **Professional Legal Work** | ⚠️ Limited | ✅ Recommended |
+| **Evidence Storage** | ❌ No | ✅ Yes |
+| **Compliance Documentation** | ⚠️ Limited | ✅ Full |
+| **Multi-Case Management** | ❌ No | ✅ Yes |
+
 ## 🚀 Deployment
 
-The application is automatically deployed to GitHub Pages when changes are pushed to the `main` branch. The deployment workflow:
+### Web Application
+The web application is automatically deployed to GitHub Pages when changes are pushed to the `main` branch:
 
 1. **Builds** the application with Vite
 2. **Deploys** to GitHub Pages
 3. **Available** at the live demo URL above
+
+### Desktop Application
+Desktop builds are created locally or via GitHub Actions:
+
+1. **Local Build**: Use the commands above to build from source
+2. **GitHub Actions**: Automated builds for releases (when code signing is available)
+3. **Distribution**: Ready for package managers and direct distribution
 
 ## 🏗️ Architecture
 

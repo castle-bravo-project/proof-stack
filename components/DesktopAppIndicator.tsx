@@ -30,16 +30,31 @@ const DesktopAppIndicator: React.FC = () => {
 
   if (!envInfo.isElectron) {
     return (
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-        <div className="flex items-center gap-3">
-          <Monitor className="text-yellow-600" size={20} />
-          <div>
-            <h3 className="font-semibold text-yellow-800">Browser Development Mode</h3>
-            <p className="text-sm text-yellow-700">
-              Running in browser for development. For full legal compliance features, 
-              use the desktop application with secure local database storage.
-            </p>
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Monitor className="text-blue-600" size={20} />
+            <div>
+              <h3 className="font-semibold text-blue-800">Web Version</h3>
+              <p className="text-sm text-blue-700">
+                You're using the web version. All features work, but data isn't saved between sessions.
+              </p>
+            </div>
           </div>
+          <div className="text-xs text-blue-600 bg-blue-100 rounded px-2 py-1">
+            ✅ Full functionality • ⚠️ No data persistence
+          </div>
+        </div>
+        <div className="mt-3 pt-3 border-t border-blue-200">
+          <p className="text-xs text-blue-600">
+            <strong>Want data persistence?</strong> Build the desktop app from source or wait for our signed release.
+            <a href="https://github.com/castle-bravo-project/proof-stack#desktop-application-development"
+               target="_blank"
+               rel="noopener noreferrer"
+               className="ml-1 underline hover:text-blue-800">
+              Build instructions →
+            </a>
+          </p>
         </div>
       </div>
     );

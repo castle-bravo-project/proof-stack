@@ -223,7 +223,6 @@ const App: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <DesktopAppIndicator />
             {analysis && (
               <button
                 onClick={handleStartOver}
