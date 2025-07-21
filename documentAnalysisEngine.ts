@@ -164,7 +164,7 @@ export class DocumentAnalysisEngine {
   }
 
   // Originality Analysis - Best Evidence Rule (FRE 1001-1008)
-  private async analyzeOriginality(content: string, metadata: any): Promise<OriginalityAnalysis> {
+  private async analyzeOriginality(_content: string, metadata: any): Promise<OriginalityAnalysis> {
     const indicators: OriginalityIndicator[] = [];
     
     // Check metadata indicators
@@ -441,7 +441,7 @@ export class DocumentAnalysisEngine {
     return exceptions;
   }
 
-  private analyzeHearsayExceptions(statements: HearsayStatement[]): HearsayException[] {
+  private analyzeHearsayExceptions(_statements: HearsayStatement[]): HearsayException[] {
     // Implementation would analyze each statement for applicable exceptions
     return [
       {
@@ -460,7 +460,7 @@ export class DocumentAnalysisEngine {
     ];
   }
 
-  private analyzeRelevanceFactors(content: string, caseContext: CaseContext): RelevanceFactor[] {
+  private analyzeRelevanceFactors(_content: string, _caseContext: CaseContext): RelevanceFactor[] {
     // This would analyze content against case facts
     return [
       {
@@ -473,7 +473,7 @@ export class DocumentAnalysisEngine {
     ];
   }
 
-  private assessPrejudiceRisk(content: string): PrejudiceAssessment {
+  private assessPrejudiceRisk(_content: string): PrejudiceAssessment {
     // Analyze content for prejudicial elements
     return {
       unfairPrejudice: 3,
@@ -511,12 +511,12 @@ export class DocumentAnalysisEngine {
     };
   }
 
-  private calculateOverallScore(...analyses: any[]): number {
+  private calculateOverallScore(..._analyses: any[]): number {
     // Weighted scoring based on different analyses
     return 75; // Placeholder
   }
 
-  private generateRecommendations(...analyses: any[]): string[] {
+  private generateRecommendations(..._analyses: any[]): string[] {
     return [
       'Review document for compliance with Federal Rules of Evidence',
       'Consider obtaining witness testimony to support authentication',
@@ -539,7 +539,7 @@ export class DocumentAnalysisEngine {
     return recommendations;
   }
 
-  private generateHearsayRecommendations(statements: HearsayStatement[], exceptions: HearsayException[]): string[] {
+  private generateHearsayRecommendations(statements: HearsayStatement[], _exceptions: HearsayException[]): string[] {
     const recommendations: string[] = [];
     
     if (statements.length > 0) {

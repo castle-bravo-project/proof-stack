@@ -363,7 +363,7 @@ export class ComplianceAuditSystem {
     userId: string,
     action: AuditAction,
     evidenceId?: string,
-    details?: Record<string, any>
+    _details?: Record<string, any>
   ): Promise<ComplianceFlag[]> {
     const flags: ComplianceFlag[] = [];
 
@@ -414,14 +414,14 @@ export class ComplianceAuditSystem {
     });
   }
 
-  private async isPrivilegedEvidence(evidenceId: string): Promise<boolean> {
+  private async isPrivilegedEvidence(_evidenceId: string): Promise<boolean> {
     // This would check against a privilege database
     // For now, return false as placeholder
     return false;
   }
 
   private async getApplicableEthicalWall(
-    userId: string,
+    _userId: string,
     evidenceId: string
   ): Promise<EthicalWall | null> {
     for (const wall of this.ethicalWalls.values()) {

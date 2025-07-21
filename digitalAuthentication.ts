@@ -267,7 +267,7 @@ export class DigitalAuthenticationSystem {
   }
 
   // Digital signature verification
-  private async verifyDigitalSignatures(evidenceFile: File | Buffer): Promise<DigitalSignature[]> {
+  private async verifyDigitalSignatures(_evidenceFile: File | Buffer): Promise<DigitalSignature[]> {
     // This would integrate with actual digital signature verification libraries
     // For now, returning a placeholder structure
     return [
@@ -367,9 +367,9 @@ export class DigitalAuthenticationSystem {
   private calculateAuthenticationScore(
     hashVerifications: HashVerification[],
     digitalSignatures: DigitalSignature[],
-    timestampValidations: TimestampValidation[],
+    _timestampValidations: TimestampValidation[],
     metadataAnalysis: MetadataAnalysis,
-    custodyChain: ChainOfCustodyEntry[],
+    _custodyChain: ChainOfCustodyEntry[],
     issues: AuthenticationIssue[]
   ): number {
     let score = 100;

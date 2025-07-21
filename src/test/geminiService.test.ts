@@ -100,6 +100,7 @@ describe('Gemini Service', () => {
     ];
 
     const mockEvidenceInfo = {
+      name: 'Test Evidence',
       type: 'document',
       description: 'Test evidence',
       source: 'Test source',
@@ -195,7 +196,7 @@ describe('Gemini Service', () => {
 
     it('should handle empty answers gracefully', async () => {
       const emptyAnswers: Answer[] = [];
-      const mockEvidenceInfo = { type: 'document', description: 'test' };
+      const mockEvidenceInfo = { name: 'Test', type: 'document', description: 'test' };
 
       await expect(
         generateComprehensiveAnalysis(emptyAnswers, mockEvidenceInfo)
@@ -235,7 +236,7 @@ describe('Gemini Service', () => {
 
       const result = await generateComprehensiveAnalysis(
         [{ questionId: 'test', value: 'test', confidence: 1 }],
-        { type: 'document', description: 'test' }
+        { name: 'Test', type: 'document', description: 'test' }
       );
 
       expect(result).toEqual(mockResponse);
@@ -259,7 +260,7 @@ describe('Gemini Service', () => {
       await expect(
         generateComprehensiveAnalysis(
           [{ questionId: 'test', value: 'test', confidence: 1 }],
-          { type: 'document', description: 'test' }
+          { name: 'Test', type: 'document', description: 'test' }
         )
       ).rejects.toThrow();
     });
@@ -281,7 +282,7 @@ describe('Gemini Service', () => {
       await expect(
         generateComprehensiveAnalysis(
           [{ questionId: 'test', value: 'test', confidence: 1 }],
-          { type: 'document', description: 'test' }
+          { name: 'Test', type: 'document', description: 'test' }
         )
       ).rejects.toThrow('Rate limit exceeded');
     });

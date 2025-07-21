@@ -25,6 +25,13 @@ describe('Integration Tests', () => {
     
     isApiKeyConfigured.mockReturnValue(true)
     generateComprehensiveAnalysis.mockResolvedValue({
+      executiveSummary: {
+        overallConfidence: 'High' as const,
+        confidenceBreakdown: { high: 5, medium: 2, low: 1 },
+        topRecommendations: ['Strengthen authentication', 'Document chain of custody']
+      },
+      overallConclusion: 'Comprehensive analysis of the submitted evidence reveals strong compliance with Federal Rules of Evidence.',
+      analysisSections: [],
       summary: 'Comprehensive analysis of the submitted evidence reveals strong compliance with Federal Rules of Evidence.',
       keyFindings: [
         'Evidence meets FRE 901 authentication requirements',

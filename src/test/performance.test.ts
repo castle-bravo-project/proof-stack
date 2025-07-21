@@ -163,6 +163,7 @@ describe('Performance Tests', () => {
       }));
 
     const mockEvidenceInfo = {
+      name: 'Performance Test Evidence',
       type: 'document',
       description: 'Performance test evidence',
       source: 'Test source',

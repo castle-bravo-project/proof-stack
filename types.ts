@@ -9,6 +9,7 @@ export interface Question {
 export interface Answer {
   questionId: string;
   value: string;
+  confidence?: number; // Optional confidence score for test compatibility
 }
 
 export interface FactorAnalysis {
@@ -43,4 +44,18 @@ export interface AnalysisResult {
   executiveSummary: ExecutiveSummary;
   overallConclusion: string;
   analysisSections: AnalysisSection[];
+  // Additional properties for backward compatibility
+  summary?: string;
+  keyFindings?: string[];
+  legalAnalysis?: {
+    strengths: string[];
+    weaknesses: string[];
+  };
+  riskAssessment?: {
+    level: 'High' | 'Medium' | 'Low';
+    factors: string[];
+  };
 }
+
+// Re-export EvidenceItem from evidenceAnalyzer for backward compatibility
+export type { EvidenceItem } from './evidenceAnalyzer';

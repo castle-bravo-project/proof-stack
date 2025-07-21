@@ -28,13 +28,13 @@ const DesktopAppIndicator: React.FC = () => {
   useEffect(() => {
     // Check if running in Electron
     const isElectron = typeof window !== 'undefined' && window.electronAPI;
-    const platform = isElectron ? window.electronAPI.platform : 'browser';
-    const isProofStack = isElectron ? window.electronAPI.isProofStack : false;
+    const platform = isElectron ? window.electronAPI?.platform : 'browser';
+    const isProofStack = isElectron ? window.electronAPI?.isProofStack : false;
 
     setEnvInfo({
       isElectron: !!isElectron,
-      platform,
-      isProofStack,
+      platform: platform || 'browser',
+      isProofStack: !!isProofStack,
       databaseConnected: !!isElectron // Database is available when Electron is available
     });
   }, []);

@@ -400,7 +400,7 @@ export class EvidenceAnalyzer {
     };
   }
 
-  private analyzeRelevance(evidence: EvidenceItem): ComplianceResult {
+  private analyzeRelevance(_evidence: EvidenceItem): ComplianceResult {
     // This would typically require case-specific information
     // For now, providing a framework
     const ruleId = 'fre-401';
@@ -431,7 +431,7 @@ export class EvidenceAnalyzer {
     };
   }
 
-  private analyzeHearsay(evidence: EvidenceItem): ComplianceResult {
+  private analyzeHearsay(_evidence: EvidenceItem): ComplianceResult {
     const ruleId = 'fre-803';
     const findings: Finding[] = [];
     const recommendations: string[] = [];

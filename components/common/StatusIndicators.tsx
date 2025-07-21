@@ -66,7 +66,7 @@ export interface ProgressBarProps {
   max?: number;
   label?: string;
   showPercentage?: boolean;
-  color?: 'primary' | 'success' | 'warning' | 'error';
+  color?: 'primary' | 'success' | 'warning' | 'error' | 'danger';
   size?: 'sm' | 'md' | 'lg';
 }
 
@@ -93,9 +93,10 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   const getFillClasses = () => {
     const colorClasses = {
       primary: 'bg-brand-primary',
-      success: 'bg-green-500',
-      warning: 'bg-yellow-500',
-      error: 'bg-red-500'
+      success: 'bg-green-600',
+      warning: 'bg-yellow-600',
+      error: 'bg-red-600',
+      danger: 'bg-red-600'
     };
 
     return `h-full rounded-full transition-all duration-500 ease-in-out ${colorClasses[color]}`;
@@ -424,7 +425,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
           <p className="text-sm text-gray-400 mb-4">{message}</p>
           <div className="flex gap-3">
             {onRetry && (
-              <button 
+              <button
                 onClick={onRetry}
                 className="btn-primary px-4 py-2 text-sm rounded transition-colors duration-200"
               >
@@ -432,7 +433,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
               </button>
             )}
             {onDismiss && (
-              <button 
+              <button
                 onClick={onDismiss}
                 className="px-4 py-2 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors duration-200"
               >
@@ -442,6 +443,78 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
           </div>
         </div>
       </div>
+    </div>
+  );
+};
+
+// Additional components for test compatibility
+export interface ComplianceScoreProps {
+  score: number;
+  breakdown?: Array<{ category: string; score: number }>;
+}
+
+export const ComplianceScore: React.FC<ComplianceScoreProps> = ({ score, breakdown }) => {
+  const getScoreColor = () => {
+    if (score >= 90) return 'text-green-400';
+    if (score >= 70) return 'text-yellow-400';
+    return 'text-red-400';
+  };
+
+  const getScoreText = () => {
+    if (score >= 90) return 'Excellent Compliance';
+    if (score >= 70) return 'Good Compliance';
+    return 'Needs Improvement';
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <span className={`text-2xl font-bold ${getScoreColor()}`}>{score}%</span>
+        <span className="text-sm text-gray-400">{getScoreText()}</span>
+      </div>
+      {breakdown && (
+        <div className="space-y-2">
+          {breakdown.map((item, index) => (
+            <div key={index} className="flex items-center justify-between text-sm">
+              <span className="text-gray-300">{item.category}</span>
+              <span className="text-gray-400">{item.score}%</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export interface RiskLevelProps {
+  level: 'LOW' | 'MEDIUM' | 'HIGH';
+  factors?: string[];
+}
+
+export const RiskLevel: React.FC<RiskLevelProps> = ({ level, factors }) => {
+  const getRiskColor = () => {
+    switch (level) {
+      case 'LOW': return 'text-green-300';
+      case 'MEDIUM': return 'text-yellow-300';
+      case 'HIGH': return 'text-red-300';
+      default: return 'text-gray-300';
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className={`font-bold ${getRiskColor()}`}>
+        {level} RISK
+      </div>
+      {factors && (
+        <div className="space-y-1">
+          {factors.map((factor, index) => (
+            <div key={index} className="text-sm text-gray-400">
+              {factor}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -8,10 +8,10 @@ let ai: GoogleGenAI | null = null;
 
 // Check for API key in environment variables
 const envApiKey =
-  import.meta.env.VITE_GEMINI_API_KEY ||
-  import.meta.env.VITE_API_KEY ||
-  process.env.GEMINI_API_KEY ||
-  process.env.API_KEY;
+  (import.meta.env?.VITE_GEMINI_API_KEY as string) ||
+  (import.meta.env?.VITE_API_KEY as string) ||
+  (typeof process !== 'undefined' ? process.env?.GEMINI_API_KEY : undefined) ||
+  (typeof process !== 'undefined' ? process.env?.API_KEY : undefined);
 
 // Initialize with environment key if available
 if (envApiKey && envApiKey !== 'placeholder_api_key') {
@@ -27,7 +27,9 @@ export const setApiKey = (apiKey: string): void => {
   currentApiKey = apiKey;
   ai = new GoogleGenAI({ apiKey: apiKey });
   // Store in localStorage for persistence
-  localStorage.setItem('gemini_api_key', apiKey);
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem('gemini_api_key', apiKey);
+  }
 };
 
 // User-specific API key management (for progressive enhancement)
@@ -38,7 +40,9 @@ export const setUserApiKey = (apiKey: string): void => {
 };
 
 export const clearUserApiKey = (): void => {
-  localStorage.removeItem('gemini_api_key');
+  if (typeof localStorage !== 'undefined') {
+    localStorage.removeItem('gemini_api_key');
+  }
   currentApiKey = null;
   ai = null;
 
@@ -56,11 +60,13 @@ export const getApiKey = (): string | null => {
   if (currentApiKey) return currentApiKey;
 
   // Try to get from localStorage
-  const storedKey = localStorage.getItem('gemini_api_key');
-  if (storedKey) {
-    currentApiKey = storedKey;
-    ai = new GoogleGenAI({ apiKey: storedKey });
-    return storedKey;
+  if (typeof localStorage !== 'undefined') {
+    const storedKey = localStorage.getItem('gemini_api_key');
+    if (storedKey) {
+      currentApiKey = storedKey;
+      ai = new GoogleGenAI({ apiKey: storedKey });
+      return storedKey;
+    }
   }
 
   return null;
@@ -69,7 +75,9 @@ export const getApiKey = (): string | null => {
 export const clearApiKey = (): void => {
   currentApiKey = null;
   ai = null;
-  localStorage.removeItem('gemini_api_key');
+  if (typeof localStorage !== 'undefined') {
+    localStorage.removeItem('gemini_api_key');
+  }
 };
 
 export const isApiKeyConfigured = (): boolean => {
@@ -77,8 +85,10 @@ export const isApiKeyConfigured = (): boolean => {
 };
 
 export const getApiKeyStatus = (): ApiKeyStatus => {
-  const userKey = localStorage.getItem('gemini_api_key');
-  if (userKey) return 'user-provided';
+  if (typeof localStorage !== 'undefined') {
+    const userKey = localStorage.getItem('gemini_api_key');
+    if (userKey) return 'user-provided';
+  }
 
   if (envApiKey && envApiKey !== 'placeholder_api_key') return 'environment';
 
@@ -214,7 +224,7 @@ export const getAIKeyPoints = async (
     `;
   try {
     const response = await getAI().models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.0-flash-exp' as string,
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
@@ -267,7 +277,7 @@ export const getAICritique = async (
     `;
   try {
     const response = await getAI().models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.0-flash-exp' as string,
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
@@ -382,7 +392,7 @@ export const generateComprehensiveAnalysis = async (
 
   try {
     const response = await getAI().models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.0-flash-exp' as string,
       contents: prompt,
       config: {
         responseMimeType: 'application/json',

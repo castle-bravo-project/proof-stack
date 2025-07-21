@@ -1,7 +1,7 @@
 // Enhanced AI Analysis with Legal Grounding
 // Integrates rule-based analysis with AI to provide legally sound recommendations
 
-import { LegalStandardsEngine, LegalRule, ComplianceResult } from './legalStandards';
+import { LegalStandardsEngine } from './legalStandards';
 import { EvidenceAnalyzer, EvidenceItem, AnalysisResult as RuleBasedResult } from './evidenceAnalyzer';
 import { DocumentAnalysisEngine, DocumentAnalysisResult } from './documentAnalysisEngine';
 import { DigitalAuthenticationSystem, AuthenticationResult } from './digitalAuthentication';
@@ -99,14 +99,14 @@ export interface SuppressionGround {
 }
 
 export class EnhancedAIAnalysisEngine {
-  private legalEngine: LegalStandardsEngine;
+  private _legalEngine: LegalStandardsEngine;
   private evidenceAnalyzer: EvidenceAnalyzer;
   private documentAnalyzer: DocumentAnalysisEngine;
   private authenticationSystem: DigitalAuthenticationSystem;
   private auditSystem: ComplianceAuditSystem;
 
   constructor() {
-    this.legalEngine = new LegalStandardsEngine();
+    this._legalEngine = new LegalStandardsEngine();
     this.evidenceAnalyzer = new EvidenceAnalyzer();
     this.documentAnalyzer = new DocumentAnalysisEngine();
     this.authenticationSystem = new DigitalAuthenticationSystem();
@@ -144,10 +144,38 @@ export class EnhancedAIAnalysisEngine {
     }
 
     // 3. Authentication analysis
+    // Convert CustodyEntry[] to ChainOfCustodyEntry[]
+    const chainOfCustodyEntries = evidence.chainOfCustody.entries.map((entry, index) => ({
+      id: `entry-${index}`,
+      timestamp: entry.timestamp,
+      handler: entry.handler,
+      handlerRole: 'investigator',
+      action: entry.action,
+      location: entry.location,
+      purpose: entry.purpose,
+      method: 'manual',
+      handlerSignature: entry.signature || '',
+      witnessName: entry.witnessSignature ? 'witness' : undefined,
+      witnessSignature: entry.witnessSignature,
+      notes: undefined,
+      evidenceState: 'original' as const,
+      integrityVerification: {
+        algorithm: 'SHA256',
+        originalHash: evidence.metadata.hashSHA256 || '',
+        currentHash: evidence.metadata.hashSHA256 || '',
+        isValid: true,
+        calculatedAt: entry.timestamp,
+        hashMD5: evidence.metadata.hashMD5 || '',
+        hashSHA256: evidence.metadata.hashSHA256 || '',
+        verified: true,
+        timestamp: entry.timestamp
+      }
+    }));
+
     const authenticationAnalysis = await this.authenticationSystem.authenticateDigitalEvidence(
       Buffer.from('placeholder'), // Would be actual file data
       { fileMetadata: evidence.metadata } as any,
-      evidence.chainOfCustody.entries
+      chainOfCustodyEntries
     );
 
     // 4. AI-enhanced analysis
@@ -258,7 +286,7 @@ export class EnhancedAIAnalysisEngine {
     };
   }
 
-  private generateContextualAnalysis(evidence: EvidenceItem, caseContext?: any): string {
+  private generateContextualAnalysis(evidence: EvidenceItem, _caseContext?: any): string {
     let analysis = `This ${evidence.type} evidence requires careful analysis under Federal Rules of Evidence. `;
     
     if (evidence.isOriginal) {
@@ -350,7 +378,7 @@ export class EnhancedAIAnalysisEngine {
     return [...new Set(recommendations)]; // Remove duplicates
   }
 
-  private async findRelevantPrecedents(evidence: EvidenceItem, caseContext?: any): Promise<LegalPrecedent[]> {
+  private async findRelevantPrecedents(_evidence: EvidenceItem, _caseContext?: any): Promise<LegalPrecedent[]> {
     // This would integrate with legal databases like Westlaw or Lexis
     // For now, returning sample precedents
     return [
@@ -368,7 +396,7 @@ export class EnhancedAIAnalysisEngine {
 
   private assessRisks(
     ruleBasedAnalysis: RuleBasedResult,
-    authenticationAnalysis?: AuthenticationResult
+    _authenticationAnalysis?: AuthenticationResult
   ): RiskAssessment {
     let admissibilityRisk: 'low' | 'medium' | 'high' = 'low';
     let exclusionRisk: 'low' | 'medium' | 'high' = 'low';
@@ -398,7 +426,7 @@ export class EnhancedAIAnalysisEngine {
     };
   }
 
-  private suggestAlternativeEvidence(evidence: EvidenceItem, analysis: RuleBasedResult): string[] {
+  private suggestAlternativeEvidence(evidence: EvidenceItem, _analysis: RuleBasedResult): string[] {
     const alternatives: string[] = [];
     
     if (!evidence.isOriginal) {
@@ -474,11 +502,11 @@ export class EnhancedAIAnalysisEngine {
   private generateExpertRecommendations(
     ruleBasedAnalysis: RuleBasedResult,
     authenticationAnalysis?: AuthenticationResult,
-    aiAnalysis?: AIEnhancedAnalysis
+    _aiAnalysis?: AIEnhancedAnalysis
   ): ExpertRecommendation[] {
     const recommendations: ExpertRecommendation[] = [];
     
-    if (authenticationAnalysis?.authenticationScore < 70) {
+    if (authenticationAnalysis?.authenticationScore && authenticationAnalysis.authenticationScore < 70) {
       recommendations.push({
         expertType: 'forensic',
         recommendation: 'Engage digital forensics expert for authentication testimony',
@@ -504,14 +532,14 @@ export class EnhancedAIAnalysisEngine {
   }
 
   private prepareCrossExaminationAnalysis(
-    ruleBasedAnalysis: RuleBasedResult,
-    documentAnalysis?: DocumentAnalysisResult,
+    _ruleBasedAnalysis: RuleBasedResult,
+    _documentAnalysis?: DocumentAnalysisResult,
     authenticationAnalysis?: AuthenticationResult
   ): CrossExaminationPrep {
     const vulnerableAreas: VulnerableArea[] = [];
     
     // Identify vulnerable areas based on analysis
-    if (authenticationAnalysis?.authenticationScore < 80) {
+    if (authenticationAnalysis?.authenticationScore && authenticationAnalysis.authenticationScore < 80) {
       vulnerableAreas.push({
         area: 'Authentication',
         description: 'Weak authentication evidence vulnerable to challenge',
@@ -554,9 +582,9 @@ export class EnhancedAIAnalysisEngine {
   }
 
   private assessMotionSuppressionRisk(
-    ruleBasedAnalysis: RuleBasedResult,
+    _ruleBasedAnalysis: RuleBasedResult,
     authenticationAnalysis?: AuthenticationResult,
-    aiAnalysis?: AIEnhancedAnalysis
+    _aiAnalysis?: AIEnhancedAnalysis
   ): MotionSuppressionRisk {
     const likelyGrounds: SuppressionGround[] = [];
     

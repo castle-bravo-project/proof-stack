@@ -47,7 +47,7 @@ describe('LegalStandardsEngine', () => {
 
       const result = engine.evaluateRule('FRE_901', digitalEvidence);
       expect(result.score).toBeLessThan(70); // Should flag missing authentication
-      expect(result.findings.some((f) => f.includes('authentication'))).toBe(
+      expect(result.findings.some((f) => f.description.includes('authentication'))).toBe(
         true
       );
     });
@@ -89,7 +89,7 @@ describe('LegalStandardsEngine', () => {
       const result = engine.evaluateRule('FRE_902', publicDocument);
       expect(result.score).toBeGreaterThan(80);
       expect(
-        result.findings.some((f) => f.includes('self-authenticating'))
+        result.findings.some((f) => f.description.includes('self-authenticating'))
       ).toBe(true);
     });
 
@@ -133,7 +133,7 @@ describe('LegalStandardsEngine', () => {
 
       const result = engine.evaluateRule('FRE_1002', copyDocument);
       expect(result.score).toBeLessThan(60);
-      expect(result.findings.some((f) => f.includes('original'))).toBe(true);
+      expect(result.findings.some((f) => f.description.includes('original'))).toBe(true);
     });
 
     it('should accept copies with proper justification', () => {
@@ -165,7 +165,7 @@ describe('LegalStandardsEngine', () => {
 
       const result = engine.evaluateRule('FRE_803_6', businessRecord);
       expect(result.score).toBeGreaterThan(75);
-      expect(result.findings.some((f) => f.includes('business record'))).toBe(
+      expect(result.findings.some((f) => f.description.includes('business record'))).toBe(
         true
       );
     });
@@ -214,7 +214,7 @@ describe('LegalStandardsEngine', () => {
 
       const result = engine.evaluateRule('FRE_403', prejudicialEvidence);
       expect(result.score).toBeLessThan(60);
-      expect(result.findings.some((f) => f.includes('prejudicial'))).toBe(true);
+      expect(result.findings.some((f) => f.description.includes('prejudicial'))).toBe(true);
     });
   });
 

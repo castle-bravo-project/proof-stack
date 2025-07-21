@@ -398,7 +398,7 @@ export class LegalStandardsEngine {
     return this.criteria.get(ruleId);
   }
 
-  analyzeCompliance(ruleId: string, evidence: any): ComplianceResult {
+  analyzeCompliance(ruleId: string, _evidence: any): ComplianceResult {
     const rule = this.getRuleById(ruleId);
     const criteria = this.getCriteriaForRule(ruleId);
 
@@ -440,7 +440,7 @@ export class LegalStandardsEngine {
 
     // Basic scoring logic based on evidence metadata
     let score = 0;
-    const findings: string[] = [];
+    const findings: Finding[] = [];
     const recommendations: string[] = [];
     const maxScore = criteria.scoringFactors.reduce(
       (sum, factor) => sum + factor.maxPoints,
@@ -469,7 +469,12 @@ export class LegalStandardsEngine {
         break;
       default:
         score = 50; // Default neutral score
-        findings.push('Rule evaluation not fully implemented');
+        findings.push({
+          type: 'concern',
+          description: 'Rule evaluation not fully implemented',
+          impact: 'medium',
+          ruleReference: ruleId
+        });
     }
 
     return {
