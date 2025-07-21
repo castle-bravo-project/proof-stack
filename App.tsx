@@ -19,7 +19,7 @@ interface EvidenceInfo {
 }
 
 // Demo analysis generator for educational purposes when no API key is present
-const generateDemoAnalysis = (answers: Answer[], evidenceInfo: EvidenceInfo): AnalysisResult => {
+const generateDemoAnalysis = (_answers: Answer[], evidenceInfo: EvidenceInfo): AnalysisResult => {
   return {
     executiveSummary: {
       overallConfidence: 'Medium',
@@ -94,7 +94,6 @@ const App: React.FC = () => {
   const totalQuestions = EVIDENCE_QUESTIONS.length;
   const totalSteps = totalQuestions + 1; // +1 for the evidence definition step
   const isFinalStep = currentStep === totalSteps;
-  const currentQuestion = currentStep > 0 && currentStep <= totalQuestions ? EVIDENCE_QUESTIONS[currentStep - 1] : null;
 
   // Track API key status for progressive enhancement
   useEffect(() => {
@@ -355,7 +354,6 @@ const DashboardView: React.FC<DashboardViewProps> = ({
           <QuestionsPanel
             answers={answers}
             onAnswerChange={onAnswerChange}
-            totalQuestions={totalQuestions}
             apiKeyStatus={apiKeyStatus}
           />
         </div>
@@ -445,9 +443,8 @@ const EvidencePanel: React.FC<{
 const QuestionsPanel: React.FC<{
   answers: Answer[];
   onAnswerChange: (questionId: string, value: string) => void;
-  totalQuestions: number;
   apiKeyStatus: ApiKeyStatus;
-}> = ({ answers, onAnswerChange, totalQuestions, apiKeyStatus }) => {
+}> = ({ answers, onAnswerChange, apiKeyStatus }) => {
   const [activeTab, setActiveTab] = useState<'foundational' | 'daubert'>('foundational');
 
   const foundationalQuestions = EVIDENCE_QUESTIONS.filter(q => q.section === 'Foundational Admissibility');
@@ -525,63 +522,7 @@ const QuestionsPanel: React.FC<{
 };
 
 
-const EvidenceDefinitionStep = ({ evidenceInfo, setEvidenceInfo }: { evidenceInfo: EvidenceInfo, setEvidenceInfo: (info: EvidenceInfo) => void }) => {
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setEvidenceInfo({ ...evidenceInfo, [name]: value });
-    };
 
-    return (
-        <div>
-            <h2 className="text-3xl font-bold text-slate-800 text-center">Define Your Evidence</h2>
-            <p className="text-slate-600 mt-2 mb-6 text-center">First, provide some basic details about the digital evidence you are assessing.</p>
-            <div className="space-y-4">
-                <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">Evidence Name / Identifier</label>
-                    <input
-                        type="text"
-                        name="name"
-                        id="name"
-                        value={evidenceInfo.name}
-                        onChange={handleInputChange}
-                        className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="e.g., iPhone 13 from suspect's vehicle"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="type" className="block text-sm font-medium text-slate-700 mb-1">Type of Evidence</label>
-                    <select
-                        name="type"
-                        id="type"
-                        value={evidenceInfo.type}
-                        onChange={handleInputChange}
-                        className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                        <option>Mobile Phone</option>
-                        <option>Laptop / Computer</option>
-                        <option>Email Account</option>
-                        <option>Cloud Storage</option>
-                        <option>CCTV Footage</option>
-                        <option>Social Media Data</option>
-                        <option>Other</option>
-                    </select>
-                </div>
-                <div>
-                    <label htmlFor="description" className="block text-sm font-medium text-slate-700 mb-1">Brief Description</label>
-                    <textarea
-                        name="description"
-                        id="description"
-                        value={evidenceInfo.description}
-                        onChange={handleInputChange}
-                        rows={4}
-                        className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Describe what the evidence is, where it was collected from, and its general context in the case."
-                    />
-                </div>
-            </div>
-        </div>
-    );
-};
 
 const AIAssistantPanel = ({ question, answer, onAnswerChange, apiKeyStatus }: {
   question: Question,
@@ -764,62 +705,12 @@ const AIAssistantPanel = ({ question, answer, onAnswerChange, apiKeyStatus }: {
 };
 
 
-const WizardStep = ({ question, answer, onAnswerChange, apiKeyStatus }: {
-  question: Question,
-  answer: string,
-  onAnswerChange: (id: string, val: string) => void,
-  apiKeyStatus: ApiKeyStatus
-}) => {
-    const [isAssistantOpen, setAssistantOpen] = useState(false);
-
-    return (
-        <div>
-            <h3 className="text-2xl font-bold text-slate-800">{question.title}</h3>
-            <p className="text-slate-600 mt-2 mb-4">{question.text}</p>
-            <textarea
-                value={answer}
-                onChange={(e) => onAnswerChange(question.id, e.target.value)}
-                className="w-full h-48 p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow placeholder:text-slate-500"
-                placeholder="Provide a detailed response..."
-            />
-            <div className="mt-4 text-right">
-                <button 
-                    onClick={() => setAssistantOpen(prev => !prev)}
-                    className="inline-flex items-center px-4 py-2 bg-slate-100 text-slate-800 font-semibold rounded-lg shadow-sm hover:bg-slate-200 transition-colors"
-                >
-                    <SparklesIcon /> {isAssistantOpen ? 'Close Assistant' : 'Ask AI Assistant'}
-                </button>
-            </div>
-            {isAssistantOpen && <AIAssistantPanel question={question} answer={answer} onAnswerChange={onAnswerChange} apiKeyStatus={apiKeyStatus} />}
-        </div>
-    );
-};
 
 
-const FinalStep = ({ onGenerateReport }: { onGenerateReport: () => void }) => {
-  return (
-    <div>
-      <h2 className="text-3xl font-bold text-center text-slate-800">Ready for Analysis</h2>
-      <p className="text-center text-slate-600 mt-2 mb-8">You have answered all the questions. When you're ready, generate your comprehensive AI-powered analysis.</p>
 
-      <div className="mt-8 text-center">
-        <button
-          onClick={onGenerateReport}
-          className="inline-flex items-center justify-center px-8 py-3 bg-green-600 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-green-700 transition-transform transform hover:scale-105"
-        >
-          <ReportIcon />
-          Generate Comprehensive Report
-        </button>
-      </div>
-      <div className="mt-6 text-center text-sm text-slate-500">
-        <p>You can go back to previous steps to review or change your answers.</p>
-      </div>
-    </div>
-  )
-};
+
 
 const LoadingSpinner = () => {
-  const [currentStage, setCurrentStage] = useState('rule_analysis');
   const [progress, setProgress] = useState(0);
   const [substage, setSubstage] = useState('');
 
@@ -838,12 +729,10 @@ const LoadingSpinner = () => {
     const updateStage = () => {
       if (currentIndex < stages.length) {
         const stage = stages[currentIndex];
-        setCurrentStage(stage.name);
         setSubstage(stage.substage);
 
         // Animate progress for this stage
         let stageProgress = 0;
-        const progressIncrement = 25; // Each stage is 25% of total
         const startProgress = currentIndex * 25;
 
         progressInterval = setInterval(() => {
@@ -1368,7 +1257,7 @@ const ReportView = ({ analysis, answers, evidenceInfo, apiKeyStatus }: { analysi
 const LegalComplianceSection: React.FC<{
   evidenceInfo: EvidenceInfo;
   analysis: AnalysisResult;
-}> = ({ evidenceInfo, analysis }) => {
+}> = ({ evidenceInfo, analysis: _analysis }) => {
   return (
     <div className="card p-6 border-l-4 border-brand-primary">
       <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
