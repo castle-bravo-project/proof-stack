@@ -117,8 +117,8 @@ const App: React.FC = () => {
   }, []);
   
   const handleAnswerChange = useCallback((questionId: string, value: string) => {
-    setAnswers(prevAnswers => {
-      const existingAnswerIndex = prevAnswers.findIndex(a => a.questionId === questionId);
+    setAnswers((prevAnswers: Answer[]) => {
+      const existingAnswerIndex = prevAnswers.findIndex((a: Answer) => a.questionId === questionId);
       if (existingAnswerIndex > -1) {
         const newAnswers = [...prevAnswers];
         newAnswers[existingAnswerIndex] = { questionId, value };
@@ -128,17 +128,18 @@ const App: React.FC = () => {
     });
   }, []);
 
-  const handleNext = () => {
-    if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
+  // Navigation functions (currently unused but kept for future use)
+  // const handleNext = () => {
+  //   if (currentStep < totalSteps) {
+  //     setCurrentStep(currentStep + 1);
+  //   }
+  // };
 
-  const handlePrev = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
+  // const handlePrev = () => {
+  //   if (currentStep > 0) {
+  //     setCurrentStep(currentStep - 1);
+  //   }
+  // };
   
   const handleGenerateReport = async () => {
     setIsLoading(true);
@@ -168,19 +169,19 @@ const App: React.FC = () => {
   };
 
   const renderCurrentStep = () => {
-    if (analysis) return <ReportView analysis={analysis} answers={answers} evidenceInfo={evidenceInfo} />;
+    if (analysis) return <ReportView analysis={analysis} answers={answers} evidenceInfo={evidenceInfo} apiKeyStatus={apiKeyStatus} />;
     if (isLoading) return <LoadingSpinner />;
     if (error) return <ErrorDisplay message={error} onRetry={handleGenerateReport} isFinalStep={isFinalStep} />;
-    
+
     if (currentStep === 0) {
         return <EvidenceDefinitionStep evidenceInfo={evidenceInfo} setEvidenceInfo={setEvidenceInfo} />
     }
 
     if (currentStep > 0 && !isFinalStep && currentQuestion) {
-      const answer = answers.find(a => a.questionId === currentQuestion.id)?.value || '';
+      const answer = answers.find((a: Answer) => a.questionId === currentQuestion.id)?.value || '';
       return <WizardStep question={currentQuestion} answer={answer} onAnswerChange={handleAnswerChange} apiKeyStatus={apiKeyStatus} />;
     }
-    
+
     if (isFinalStep) {
       return <FinalStep onGenerateReport={handleGenerateReport} />;
     }
