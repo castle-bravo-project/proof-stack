@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangleIcon, CheckCircleIcon, KeyIcon, XCircleIcon, ExternalLinkIcon, EyeIcon, EyeOffIcon } from '../icons';
-import { getApiKeyStatus, setUserApiKey, clearUserApiKey, isApiKeyConfigured, ApiKeyStatus } from '../../services/geminiService';
+import { getApiKeyStatus, setUserApiKey, clearUserApiKey, ApiKeyStatus } from '../../services/geminiService';
 
 interface ApiKeyBannerProps {
   className?: string;

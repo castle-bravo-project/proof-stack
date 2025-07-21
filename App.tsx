@@ -168,26 +168,7 @@ const App: React.FC = () => {
     }
   };
 
-  const renderCurrentStep = () => {
-    if (analysis) return <ReportView analysis={analysis} answers={answers} evidenceInfo={evidenceInfo} apiKeyStatus={apiKeyStatus} />;
-    if (isLoading) return <LoadingSpinner />;
-    if (error) return <ErrorDisplay message={error} onRetry={handleGenerateReport} isFinalStep={isFinalStep} />;
 
-    if (currentStep === 0) {
-        return <EvidenceDefinitionStep evidenceInfo={evidenceInfo} setEvidenceInfo={setEvidenceInfo} />
-    }
-
-    if (currentStep > 0 && !isFinalStep && currentQuestion) {
-      const answer = answers.find((a: Answer) => a.questionId === currentQuestion.id)?.value || '';
-      return <WizardStep question={currentQuestion} answer={answer} onAnswerChange={handleAnswerChange} apiKeyStatus={apiKeyStatus} />;
-    }
-
-    if (isFinalStep) {
-      return <FinalStep onGenerateReport={handleGenerateReport} />;
-    }
-
-    return null;
-  };
   
   const handleStartOver = () => {
     setCurrentStep(0);
@@ -246,7 +227,6 @@ const App: React.FC = () => {
           <ReportView analysis={analysis} answers={answers} evidenceInfo={evidenceInfo} apiKeyStatus={apiKeyStatus} />
         ) : (
           <DashboardView
-            currentStep={currentStep}
             evidenceInfo={evidenceInfo}
             setEvidenceInfo={setEvidenceInfo}
             answers={answers}
@@ -255,7 +235,6 @@ const App: React.FC = () => {
             isLoading={isLoading}
             error={error}
             totalQuestions={totalQuestions}
-            currentQuestion={currentQuestion}
             isFinalStep={isFinalStep}
             apiKeyStatus={apiKeyStatus}
           />
@@ -269,7 +248,6 @@ const App: React.FC = () => {
 
 // Dashboard View Component
 interface DashboardViewProps {
-  currentStep: number;
   evidenceInfo: EvidenceInfo;
   setEvidenceInfo: (info: EvidenceInfo) => void;
   answers: Answer[];
@@ -278,13 +256,11 @@ interface DashboardViewProps {
   isLoading: boolean;
   error: string | null;
   totalQuestions: number;
-  currentQuestion: Question | null;
   isFinalStep: boolean;
   apiKeyStatus: ApiKeyStatus;
 }
 
 const DashboardView: React.FC<DashboardViewProps> = ({
-  currentStep,
   evidenceInfo,
   setEvidenceInfo,
   answers,
@@ -293,7 +269,6 @@ const DashboardView: React.FC<DashboardViewProps> = ({
   isLoading,
   error,
   totalQuestions,
-  currentQuestion,
   isFinalStep,
   apiKeyStatus
 }) => {

@@ -8,6 +8,17 @@ interface AppEnvironmentInfo {
   databaseConnected: boolean;
 }
 
+// Extend Window interface for Electron API
+declare global {
+  interface Window {
+    electronAPI?: {
+      platform: string;
+      isProofStack: boolean;
+      isElectron: boolean;
+    };
+  }
+}
+
 const DesktopAppIndicator: React.FC = () => {
   const [envInfo, setEnvInfo] = useState<AppEnvironmentInfo>({
     isElectron: false,
