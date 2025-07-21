@@ -55,19 +55,37 @@ export const ApiKeyBanner: React.FC<ApiKeyBannerProps> = ({ className = '' }) =>
     setValidationError(null);
 
     try {
-      // Test the API key by making a simple request
-      const testAI = new (await import('@google/genai')).GoogleGenAI({ apiKey: apiKey });
-      await testAI.models.generateContent({
+      // Test the API key by making a simple request using the same pattern as geminiService
+      const { GoogleGenAI } = await import('@google/genai');
+      const testAI = new GoogleGenAI({ apiKey: apiKey });
+      const response = await testAI.models.generateContent({
         model: 'gemini-2.5-flash-preview-04-17',
-        contents: 'Test',
-        config: { temperature: 0.1 }
+        contents: 'Test API key validation',
+        config: {
+          temperature: 0.1,
+          thinkingConfig: { thinkingBudget: 0 }
+        }
       });
 
-      setUserApiKey(apiKey);
-      setShowInput(false);
-      setApiKey('');
-    } catch (error) {
-      setValidationError('Invalid API key or network error. Please check your key and try again.');
+      // If we get here, the API key is valid
+      if (response && response.text) {
+        setUserApiKey(apiKey);
+        setShowInput(false);
+        setApiKey('');
+      } else {
+        setValidationError('API key validation failed. Please check your key and try again.');
+      }
+    } catch (error: any) {
+      console.error('API key validation error:', error);
+      if (error.message?.includes('API_KEY_INVALID') || error.message?.includes('401')) {
+        setValidationError('Invalid API key. Please check your Gemini API key and try again.');
+      } else if (error.message?.includes('PERMISSION_DENIED')) {
+        setValidationError('API key does not have permission to access Gemini. Please check your key permissions.');
+      } else if (error.message?.includes('404')) {
+        setValidationError('API endpoint not found. This may be a temporary issue with the Gemini API.');
+      } else {
+        setValidationError('Network error or API unavailable. Please check your connection and try again.');
+      }
     } finally {
       setIsValidating(false);
     }
