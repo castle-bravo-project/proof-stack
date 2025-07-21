@@ -226,9 +226,9 @@ function createMenu() {
             dialog.showMessageBox(mainWindow, {
               type: 'info',
               title: 'About ProofStack',
-              message: 'ProofStack Legal Compliance Analysis Tool',
+              message: 'ProofStack Digital Evidence Assessment Platform',
               detail:
-                'Federal Rules of Evidence (FRE) compliance analysis\nSecure local storage for legal documents\nVersion: 1.0.0\n⚖️ Legal compliance made simple',
+                'Progressive Enhancement API Key Management\nAI-Powered Legal Analysis with Gemini Integration\nDemo Mode for Educational Learning\nSecure Local Storage for Legal Documents\nVersion: 1.1.0\n⚖️ Legal compliance made simple',
             });
           },
         },
