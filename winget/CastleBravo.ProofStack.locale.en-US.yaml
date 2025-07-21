@@ -1,0 +1,48 @@
+# Created with YamlCreate.ps1 v2.4.1
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.6.0.schema.json
+
+PackageIdentifier: CastleBravo.ProofStack
+PackageVersion: 1.1.0
+PackageLocale: en-US
+Publisher: Castle Bravo Project
+PublisherUrl: https://github.com/castle-bravo-project
+PublisherSupportUrl: https://github.com/castle-bravo-project/proof-stack/issues
+PackageName: ProofStack Legal Compliance Tool
+PackageUrl: https://castle-bravo-project.github.io/proof-stack/
+License: MIT
+LicenseUrl: https://github.com/castle-bravo-project/proof-stack/blob/main/LICENSE
+Copyright: Copyright (c) 2025 Castle Bravo Project
+CopyrightUrl: https://github.com/castle-bravo-project/proof-stack/blob/main/LICENSE
+ShortDescription: Digital Evidence Assessment Platform with AI-Powered Legal Analysis
+Description: |-
+  ProofStack is a comprehensive digital evidence assessment platform that helps legal professionals evaluate the admissibility of digital evidence against established legal standards. Features include progressive enhancement API key management, zero barrier to entry with demo mode, AI-powered legal analysis with Gemini integration, and secure local storage.
+Moniker: proofstack
+Tags:
+- legal
+- compliance
+- evidence
+- analysis
+- forensics
+- law
+- electron
+- desktop
+- ai
+- gemini
+ReleaseNotes: |-
+  - Progressive Enhancement API Key Management
+  - Zero barrier to entry with demo mode
+  - AI-powered legal analysis with Gemini integration
+  - Secure local API key storage
+  - Educational content and mock analysis
+  - Desktop app with native interface
+  - SQLite database for evidence storage
+  - Professional menu system
+  - Chain of custody tracking
+ReleaseNotesUrl: https://github.com/castle-bravo-project/proof-stack/releases/tag/v1.1.0
+PurchaseUrl: https://castle-bravo-project.github.io/proof-stack/
+InstallationNotes: Launch ProofStack from the Start Menu. Works immediately in demo mode, or add your Gemini API key for AI features.
+Documentations:
+- DocumentLabel: User Guide
+  DocumentUrl: https://github.com/castle-bravo-project/proof-stack/blob/main/README.md
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0
