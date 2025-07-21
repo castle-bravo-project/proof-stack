@@ -732,8 +732,6 @@ const AIAssistantPanel = ({ question, answer, onAnswerChange, apiKeyStatus }: {
                         This is educational feedback. Add your API key for personalized AI critique.
                       </p>
                     )}
-                        AI Critique:
-                    </h5>
 
                     <div className="space-y-4">
                         {result.strengths.length > 0 && (
